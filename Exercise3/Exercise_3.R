@@ -34,36 +34,6 @@ iter <- iter +1
 
 if (all(CurrentCentroids == PreviousCentroids)) {
   break
- # DistanceCalculation(CurrentCentroids,DF)
+ 
 }
 }
-
-# DistanceCalculation <- function(CurrentCentroids,DF) 
-# {
-#   Distance <- apply(CurrentCentroids,1,function(CurrentCentroids)
-#     (apply(DF,1,function(DF,CurrentCentroids)
-#       dist(rbind(DF,CurrentCentroids)),CurrentCentroids)))
-#   
-#   Distance <- data.frame(Distance)
-#   
-#   cols <- c("p1","p2","p3")
-#   colnames(Distance) <- cols
-#   
-#   Distance$Clusters <- colnames(Distance)[apply(Distance,1,which.min)]
-#   Distance$index <-index
-#   DF2 <- merge(DF, Distance, by="index")
-#   
-#   DF2 <- DF2 %>%
-#     select(index,x, y, p1, p2, p3, Clusters) %>% group_by(Clusters)
-#   
-#   PreviousCentroids <-  DF2 %>%  summarise(x = mean(x),
-#                                           y = mean(y))
-#   
-#   
-# }
-# 
-# repeat{ # in R
-#   ..statements..
-#   if(! condition){ break } # Negation is crucial here!
-# }
-
