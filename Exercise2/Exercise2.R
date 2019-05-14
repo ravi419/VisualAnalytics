@@ -37,6 +37,7 @@ p +geom_bar(stat = "identity")
 
 #1.b
 
+str(ByLeagueID)
 
 
 ByLeagueID$EUidentifier<- ifelse(ByLeagueID$league_id == c(1729)
@@ -62,6 +63,29 @@ boxplot(ByLeagueID$home_team_goal, ByLeagueID$away_team_goal)
 
 
 #3
+ByLeagueID$month <- as.Date(ByLeagueID$date)
+ByLeagueID$month <- format(as.Date(ByLeagueID$month, format="%d/%m/%Y"),"%m")
+
+ByLeagueID$SummerMonths <- ifelse(ByLeagueID$month == 08 , ByLeagueID$SummerMonths <- 1 , ByLeagueID$SummerMonths <- 0)
+
+ByLeagueID$SummerMonths<- ifelse(ByLeagueID$month == c("05")
+                                 | ByLeagueID$month == c("06")
+                                 | ByLeagueID$month == c("07")
+                                 | ByLeagueID$month == c("08") ,
+                                 ByLeagueID$SummerMonths <- 1 , ByLeagueID$SummerMonths <- 0)
+
+
+
+FairWeatherMonths <- group_by(ByLeagueID,SummerMonths) %>%
+  summarise(avg = mean(total_goals, na.rm = TRUE))
+ggplot(na.omit(FairWeatherMonths), aes(x = SummerMonths, y = avg, colour = avg)) +
+  geom_point() + geom_line()
+# ByLeagueID <- ByLeagueID %>%
+#   select(league_id,date, home_team_goal, away_team_goal, total_goals, EUidentifier,SummerMonths) %>% group_by(SummerMonths)
+# 
+# FairWeatherMonths <- ByLeagueID %>% summarise(avg = mean(total_goals))  
+
+
 
 
 
@@ -88,15 +112,18 @@ HomeTeamPoss <-MatchTable %>%
 HomeTeamPossWithoutNa <- subset(HomeTeamPoss, ! is.na(HomeTeamPoss$home_team_possession))
 MeanHomeTeamPoss <- mean(HomeTeamPossWithoutNa$home_team_possession)
 
-attach(HomeTeamPossWithoutNa)
-par(mfrow=c(2,1))
 
-d <- density(HomeTeamPossWithoutNa$home_team_possession)
-plot(d, main="Kernel Density of Miles Per Gallon")
-polygon(d, col="red", border="blue") 
 
-qqnorm(HomeTeamPossWithoutNa$home_team_possession, pch = 1, frame = FALSE)
-qqline(HomeTeamPossWithoutNa$home_team_possession, col = "steelblue", lwd = 2)
+
+# attach(HomeTeamPossWithoutNa)
+# par(mfrow=c(2,1))
+# 
+# d <- density(HomeTeamPossWithoutNa$home_team_possession)
+# plot(d, main="Kernel Density of Miles Per Gallon")
+# polygon(d, col="red", border="blue") 
+# 
+# qqnorm(HomeTeamPossWithoutNa$home_team_possession, pch = 1, frame = FALSE)
+# qqline(HomeTeamPossWithoutNa$home_team_possession, col = "steelblue", lwd = 2)
 
 
 
