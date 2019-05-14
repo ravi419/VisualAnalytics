@@ -14,6 +14,7 @@ plotlist = list()
 par(mfrow=c(2,4))
 for(i in 2:8) {
       K <- kmeans(DF, centers= i , nstart = 25)
+      #fviz_cluster(K, geom = "point", data = DF)
       plot(DF,col=K$cluster)
       # plot(DF,K$cluster)
       # p <- ggplot(DF, aes(Exam1, Exam2)) +
@@ -28,6 +29,30 @@ for(i in 2:8) {
       # }
      
 }
+
+k2 <- kmeans(DF, centers = 2, nstart = 25)
+k3 <- kmeans(DF, centers = 3, nstart = 25)
+k4 <- kmeans(DF, centers = 4, nstart = 25)
+k5 <- kmeans(DF, centers = 5, nstart = 25)
+k6 <- kmeans(DF, centers = 6, nstart = 25)
+k7 <- kmeans(DF, centers = 7, nstart = 25)
+k8 <- kmeans(DF, centers = 8, nstart = 25)
+
+
+# plots to compare
+p1 <- fviz_cluster(k2, geom = "point", data = DF) + ggtitle("k = 2")
+p2 <- fviz_cluster(k3, geom = "point",  data = DF) + ggtitle("k = 3")
+p3 <- fviz_cluster(k4, geom = "point",  data = DF) + ggtitle("k = 4")
+p4 <- fviz_cluster(k5, geom = "point",  data = DF) + ggtitle("k = 5")
+p5 <- fviz_cluster(k6, geom = "point",  data = DF) + ggtitle("k = 6")
+p6 <- fviz_cluster(k7, geom = "point",  data = DF) + ggtitle("k = 7")
+p7 <- fviz_cluster(k8, geom = "point",  data = DF) + ggtitle("k = 8")
+
+library(gridExtra)
+grid.arrange(p1, p2, p3, p4,p5,p6,p7 ,nrow = 2)
+
+
+
 
 
 

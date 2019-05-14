@@ -6,6 +6,10 @@ index <- c("p1","p2","p3","p4","p5","p6","p7","p8","p9","p10","p11","p12")
 
 DF <- data.frame(index, x, y, stringsAsFactors=FALSE)
 
+
+ggplot(DF, aes(x = x, y = y)) +
+  geom_point()
+
 PreviousCentroids <- (DF[c(1,2,3),c("index","x","y")])
 
 iter <-1
