@@ -1,0 +1,335 @@
+---
+title: "Excersice Sheet 11"
+fontsize: 11pt
+header-includes: \usepackage[german]{babel}
+output:
+  html_document: default
+  pdf_document:
+    highlight: haddock
+fig_caption: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      eval = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+
+```
+
+```{r}
+
+library(stringr)
+
+library(tm)
+#library(wordcloud) # for data visualization
+#library(SnowballC)
+library(NLP)
+library(RColorBrewer)
+library(e1071)
+library(gmodels)
+library(caret) # confusion Matrix
+library(lattice)
+library(ggplot2)
+
+library(sqldf)
+
+```
+
+
+
+**Block 1**: Develop a Naive Bayesian classifier that can detect spam SMS. The learning record contains the text and the label for each SMS: Spam SMS are marked as `spam` and normal SMS as `ham`. The record is to be converted into a Document-Term Matrix$^1$, which serves as input for the Naive Bayes classifier.
+
+
+
+1. Determine the number of `spam` and `ham` messages in the record. Perform a word tokenization$^2$. For example, you can use `tidytext::unnest_tokens()`. Convert all uppercase letters to lowercase letters and remove punctuation marks like ".", "," and ";". Remove stop words like "and", "of" and "or" from the SMS text. You can use stop dictionaries like `tidytext::stop_words` or `tm::stopwords()`.
+
+```{r}
+# read from the .csv file / load the data set
+msgs <- read.csv("spam.csv")
+
+# set as per encoding type by using iconv() function
+msgs[, sapply(msgs, is.character)] <- sapply(
+  msgs[, sapply(msgs, is.character)], iconv, "WINDOWS-1252","UTF-8")
+
+# View the first few lines of the dataset
+#head(MESSAGES)
+
+# Select & rename appropriate columns of the dataset
+msgs <- msgs[, 1:2]
+
+# set column name
+colnames(msgs) <- c("Tag", "Msg")
+
+# FETCH SMS and LABELS
+SMS <- msgs$Msg
+LABELS <- msgs$Tag
+
+
+table(LABELS)
+
+#gives properties of table
+prop.table(table(LABELS))
+
+
+# Performing tokenization
+smsCorpus <- VCorpus(VectorSource(SMS))
+
+smsCorpusClean <- tm_map(smsCorpus, content_transformer(tolower))
+smsCorpusClean <- tm_map(smsCorpusClean, removeWords, stopwords())
+smsCorpusClean <- tm_map(smsCorpusClean, removePunctuation)
+
+sms_dtm <- DocumentTermMatrix(smsCorpusClean)
+
+sms_dtm
+
+
+
+
+
+```
+
+
+
+
+2. Identify the 10 most common words for Spam and Ham SMS. Remove words that occur less than 2 times in total in all SMS. Create a Document-Term Matrix. The rows of the matrix correspond to the SMS and the columns correspond to all words that occur in all SMS. Each value in the matrix indicates whether a particular word occurs in a particular SMS (`TRUE`/`FALSE`).
+
+```{r}
+
+sms_freq_terms <- findFreqTerms(sms_dtm, 2)
+
+sms_freq_terms[(1:10)]
+
+
+# Fetch the words that occur at least 2 times
+sms_dtm_reduced <- sms_dtm[, sms_freq_terms]
+
+sms_dtm_reduced
+
+
+# Create Document Term Matrix where ROWS -> represents sms & COLUMNS -> represents words
+convert_values <- function(x) {
+  x <- ifelse(x > 0, "TRUE", "FALSE")
+}
+
+sms_dtm_reduced <- apply(sms_dtm_reduced, MARGIN = 2, convert_values)
+
+
+
+```
+
+
+
+
+
+3. Divide the data set into a training and a test quantity in the ratio 70%:30%. Make sure that the distribution of `spam` and `ham` is approximately the same in both quantities. Use `set.seed()` for reproducibility. Learn a Naive Bayes classifier on the training set, e.g. with `e1071:naiveBayes()`. Use the learned model to predict spam in the test set. Create a Confusion Matrix and calculate Accuracy, Sensitivity and Specificity. Calculate the improvement or deterioration in accuracy, sensitivity and specificity of the model compared to a simpler classifier that would always predict the majority class (`ham`) for each SMS.
+
+```{r}
+
+# Divide data set into training and test in ratio 70%:30%
+nRows = nrow(sms_dtm_reduced)
+SMS_TRAIN_SET <- sms_dtm_reduced[1 : (0.7*nRows),] 
+SMS_TEST_SET <- sms_dtm_reduced[((0.7*nRows)+1) : nRows,] 
+
+SMS_TRAIN_LABELS <- factor(LABELS[1 : (0.7*nRows)])
+SMS_TEST_LABELS <- factor(LABELS[((0.7*nRows)+1) : nRows])
+
+
+set.seed(123)
+
+# Create model from the training dataset
+sms_classifier <- naiveBayes(SMS_TRAIN_SET, SMS_TRAIN_LABELS)
+
+# Make predictions on test set
+sms_test_pred <- predict(sms_classifier, SMS_TEST_SET)
+
+# Create confusion matrix
+confMatrix <- confusionMatrix(data = sms_test_pred, reference = SMS_TEST_LABELS,
+                              dnn = c("Prediction", "Actual"))
+confMatrix
+
+
+
+
+
+
+
+```
+
+------
+
+**Block 2**: Since 1946, all member states of the United Nations have come together at the United Nations General Assembly to discuss and vote on resolutions, among other things. Currently 193 states belong to the United Nations. Each of these member states has exactly one vote in the General Assembly's resolution votes on issues such as disarmament, international security, humanitarian aid and human rights.
+
+
+```{r}
+
+# Load data set
+UNVotes <- readRDS("UNVotes.rds")
+
+```
+
+
+
+
+The record for this task contains the complete voting process at the General Assembly of each country. Is it possible to predict whether Germany will vote "yes" or "no" in a resolution vote?
+
+4. Display the number of resolutions voted on each year in a line chart. In which year were there the most votes and how many were there? Calculate between Germany and the USA for each year the proportion of equal votes (variable `vote`) for resolutions, hereinafter referred to as `agreement`. For the year 2006, the agreement between the two states was only about 25% of a total of 87 votes. (_Note: until 1989 "Federal Republic of Germany"; from 1989 "Germany"_) 
+
+
+```{r}
+
+Resolutions <- sqldf("SELECT year, COUNT(vote) res_vote 
+             FROM UNVotes 
+             WHERE vote in (1, 2, 3) 
+             GROUP BY year
+             ORDER BY year;")
+
+plot(Resolutions$year, Resolutions$res_vote, type="n", 
+     ylab = "Number of Resolutions voted -->", xlab = "Year -->") 
+
+lines(Resolutions$year, Resolutions$res_vote, type = "b", lwd = 1.5, lty = 3, 
+        col = 3, pch = 18)
+
+MaxVote <- sqldf("SELECT year, MAX(res_vote) max_vote
+                 FROM Resolutions")
+MaxVote
+
+
+# Propotion of equal votes for each year between Germany and USA
+UNVotesModified <- UNVotes
+UNVotesModified$country[UNVotesModified$country == "Federal Republic of Germany"] <- "Germany"
+UNVotesModified$country <- as.factor(UNVotesModified$country)
+
+
+USA <- sqldf("SELECT country, year, vote, COUNT(vote) cnt 
+               FROM UNVotesModified 
+               WHERE country like 'United States of America' 
+               GROUP BY year, country, vote;")
+
+DE <- sqldf("SELECT country, year, vote, COUNT(vote) cnt 
+            FROM UNVotesModified 
+            WHERE country like '%Germany%' 
+            GROUP BY year, country, vote;")
+
+AgreementVote <- sqldf("SELECT year, total_vote, agg_vote, ((agg_vote * 100) / total_vote) percent
+                        FROM (SELECT year, SUM(total_vote) total_vote, SUM(CASE
+                                                                              WHEN vote == 1 THEN vote_cnt
+                                                                              WHEN vote == 3 THEN vote_cnt
+                                                                              ELSE 0
+                                                                          END) agg_vote
+                              FROM (SELECT A.year, A.vote, CASE
+                                                              WHEN A.cnt < B.cnt THEN A.cnt
+                                                              WHEN A.cnt > B.cnt THEN B.cnt
+                                                              ELSE A.cnt
+                                                            END vote_cnt, SUM(A.cnt) total_vote
+                                                          
+                                     FROM USA A, DE B
+                                     WHERE A.vote = B.vote
+                                     AND A.year = B.year
+                                     GROUP BY A.year, A.vote)
+                              GROUP BY year);")
+
+```
+
+
+
+
+
+5. Create a linear regression model that predicts the agreement between the two states based on the year (`agreement ~ year`). Interpret the trend and the p-value of the regression coefficient for `year`. Check the statement of the model graphically. Create a distance matrix between all pairs of states based on their voting history. Only consider states that have cast a vote in at least 70% of all votes. Determine the 5 states that are most similar or most dissimilar to Germany with regard to the voting history at UN General Assemblies.
+
+```{r}
+
+linearModel <- lm(formula = agg_vote ~ year, data = AgreementVote)
+modelSummary <- summary(linearModel)
+modelSummary
+
+plot(linearModel, 1)
+
+
+
+COUNTRIES <- sqldf("SELECT country, agg_vote --, ((agg_vote * 100) / total_vote) percent
+                    FROM (SELECT country, SUM(cnt) total_vote, 
+                                SUM(CASE
+                                    WHEN vote == 1 THEN cnt
+                                    WHEN vote == 3 THEN cnt
+                                    ELSE 0
+                                  END) agg_vote
+                          FROM (SELECT country, vote, COUNT(vote) cnt 
+                                 FROM UNVotes 
+                                 GROUP BY country, vote)
+                                 GROUP BY country)
+                                 WHERE ((agg_vote * 100) / total_vote) >= 70;")
+
+distMatrix <- as.matrix(dist(COUNTRIES, method = "manhattan", diag = TRUE, upper = FALSE))
+
+```
+
+
+
+
+
+
+
+
+6. Divide the data set into a training and test set at a ratio of 75%:25%. Create a $kNN$ classifier with $k=3$ (`caret::knn3Train()`) to predict the vote of Germany in a vote based on the votes of the countries ` 'Italy', 'Netherlands', 'United States of America', 'Israel', 'Cuba', 'India'`. Remove votes in which Germany abstained (`vote=2` ("Abstain")) to get a binary target variable for `vote=1` ("Yes") and `vote=0` ("No"). Create the Confusion Matrix and calculate the Accuracy for the model. On the same data, create a logistic regression model (`glm(..., family = "binomial")`) and compare the accuracy with that of the $kNN$ classifier.
+
+
+```{r}
+DATASET <- sqldf("SELECT country, year, SUM(cnt) cnt, vote
+                  FROM (SELECT CASE
+                            WHEN country like 'Cuba' THEN 1
+                            WHEN country like 'Germany' THEN 2
+                            WHEN country like 'India' THEN 3
+                            WHEN country like 'Israel' THEN 4
+                            WHEN country like 'Italy' THEN 5
+                            WHEN country like 'Netherlands' THEN 6
+                            WHEN country like 'United States of America' THEN 7
+                            ELSE 0
+                         END country, CASE 
+                                          WHEN vote == 3 THEN 0
+                                          ELSE vote
+                                        END vote, year, COUNT(vote) cnt
+                 FROM UNVotesModified
+                 WHERE country IN ('Italy', 'Netherlands', 'United States of America', 'Israel', 'Cuba', 'India', 'Germany')
+                 AND vote <> 2
+                 GROUP BY country, vote, year)
+                 GROUP BY country, vote, year;")
+
+nRows <- nrow(DATASET)
+TRAIN_SET <- DATASET[1 : (0.7*nRows),]
+TEST_SET <- DATASET[((0.7*nRows)+1) : nRows,] 
+
+CL_TRAIN_LABEL <- factor(TRAIN_SET[,4])
+CL_TEST_LABEL <- factor(TEST_SET[,4])
+
+# logistic regression model
+glmModel <- glm(formula = vote~., data = TRAIN_SET, family = binomial(link='logit'))
+
+glmPredict <- predict(glmModel, newdata = TEST_SET, type = "response")
+
+fitted.results <- ifelse(glmPredict > 0.5,1,0)
+misClasificError <- mean(fitted.results != TEST_SET$vote)
+print(paste('Logistic Regression Model Accuracy :: ',1-misClasificError))
+
+
+# KNN classifier
+TRAIN_SET$vote=NULL
+TEST_SET$vote=NULL
+knn3T <- knn3Train(TRAIN_SET, TEST_SET, cl=CL_TRAIN_LABEL, k=3)
+confMatrix <- confusionMatrix(data = factor(knn3T), reference = CL_TEST_LABEL,
+                              dnn = c("Prediction", "Actual"))
+confMatrix
+
+
+```
+
+------
+Dataset for Block 1: http://isgwww.cs.uni-magdeburg.de/cv/lehre/VisAnalytics/material/exercise/datasets/spam.csv  
+(adaptiert von http://www.dt.fee.unicamp.br/~tiago/smsspamcollection/)
+
+Dataset for Block 2: http://isgwww.cs.uni-magdeburg.de/cv/lehre/VisAnalytics/material/exercise/datasets/UNVotes.rds  
+(adapted by https://dataverse.harvard.edu/dataset.xhtml?persistentId=hdl:1902.1/12379)  
+- Data Dictionary / Codebook: http://isgwww.cs.uni-magdeburg.de/cv/lehre/VisAnalytics/material/exercise/datasets/UNVotes_Codebook.pdf
+
+$^1$ https://en.wikipedia.org/wiki/Document-term_matrix  
+$^2$ https://de.wikipedia.org/wiki/Tokenisierung, http://tidytextmining.com/tidytext.html

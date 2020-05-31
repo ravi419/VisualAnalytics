@@ -1,0 +1,194 @@
+\documentclass[11pt,]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Excersice Sheet 11},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Excersice Sheet 11}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{}
+    \preauthor{}\postauthor{}
+    \date{}
+    \predate{}\postdate{}
+  
+\usepackage[german]{babel}
+
+\begin{document}
+\maketitle
+
+\textbf{Block 1}: Develop a Naive Bayesian classifier that can detect
+spam SMS. The learning record contains the text and the label for each
+SMS: Spam SMS are marked as \texttt{spam} and normal SMS as
+\texttt{ham}. The record is to be converted into a Document-Term
+Matrix\(^1\), which serves as input for the Naive Bayes classifier.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Determine the number of \texttt{spam} and \texttt{ham} messages in the
+  record. Perform a word tokenization\(^2\). For example, you can use
+  \texttt{tidytext::unnest\_tokens()}. Convert all uppercase letters to
+  lowercase letters and remove punctuation marks like ``.'', ``,'' and
+  ``;''. Remove stop words like ``and'', ``of'' and ``or'' from the SMS
+  text. You can use stop dictionaries like
+  \texttt{tidytext::stop\_words} or \texttt{tm::stopwords()}.
+\item
+  Identify the 10 most common words for Spam and Ham SMS. Remove words
+  that occur less than 2 times in total in all SMS. Create a
+  Document-Term Matrix. The rows of the matrix correspond to the SMS and
+  the columns correspond to all words that occur in all SMS. Each value
+  in the matrix indicates whether a particular word occurs in a
+  particular SMS (\texttt{TRUE}/\texttt{FALSE}).
+\item
+  Divide the data set into a training and a test quantity in the ratio
+  70\%:30\%. Make sure that the distribution of \texttt{spam} and
+  \texttt{ham} is approximately the same in both quantities. Use
+  \texttt{set.seed()} for reproducibility. Learn a Naive Bayes
+  classifier on the training set, e.g.~with \texttt{e1071:naiveBayes()}.
+  Use the learned model to predict spam in the test set. Create a
+  Confusion Matrix and calculate Accuracy, Sensitivity and Specificity.
+  Calculate the improvement or deterioration in accuracy, sensitivity
+  and specificity of the model compared to a simpler classifier that
+  would always predict the majority class (\texttt{ham}) for each SMS.
+\end{enumerate}
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+\textbf{Block 2}: Since 1946, all member states of the United Nations
+have come together at the United Nations General Assembly to discuss and
+vote on resolutions, among other things. Currently 193 states belong to
+the United Nations. Each of these member states has exactly one vote in
+the General Assembly's resolution votes on issues such as disarmament,
+international security, humanitarian aid and human rights.\\
+The record for this task contains the complete voting process at the
+General Assembly of each country. Is it possible to predict whether
+Germany will vote ``yes'' or ``no'' in a resolution vote?
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  Display the number of resolutions voted on each year in a line chart.
+  In which year were there the most votes and how many were there?
+  Calculate between Germany and the USA for each year the proportion of
+  equal votes (variable \texttt{vote}) for resolutions, hereinafter
+  referred to as \texttt{agreement}. For the year 2006, the agreement
+  between the two states was only about 25\% of a total of 87 votes.
+  (\emph{Note: until 1989 ``Federal Republic of Germany''; from 1989
+  ``Germany''})
+\item
+  Create a linear regression model that predicts the agreement between
+  the two states based on the year
+  (\texttt{agreement\ \textasciitilde{}\ year}). Interpret the trend and
+  the p-value of the regression coefficient for \texttt{year}. Check the
+  statement of the model graphically. Create a distance matrix between
+  all pairs of states based on their voting history. Only consider
+  states that have cast a vote in at least 70\% of all votes. Determine
+  the 5 states that are most similar or most dissimilar to Germany with
+  regard to the voting history at UN General Assemblies.
+\item
+  Divide the data set into a training and test set at a ratio of
+  75\%:25\%. Create a \(kNN\) classifier with \(k=3\)
+  (\texttt{caret::knn3Train()}) to predict the vote of Germany in a vote
+  based on the votes of the countries
+  \texttt{\textquotesingle{}Italy\textquotesingle{},\ \textquotesingle{}Netherlands\textquotesingle{},\ \textquotesingle{}United\ States\ of\ America\textquotesingle{},\ \textquotesingle{}Israel\textquotesingle{},\ \textquotesingle{}Cuba\textquotesingle{},\ \textquotesingle{}India\textquotesingle{}}.
+  Remove votes in which Germany abstained (\texttt{vote=2}
+  (``Abstain'')) to get a binary target variable for \texttt{vote=1}
+  (``Yes'') and \texttt{vote=0} (``No''). Create the Confusion Matrix
+  and calculate the Accuracy for the model. On the same data, create a
+  logistic regression model (\texttt{glm(...,\ family\ =\ "binomial")})
+  and compare the accuracy with that of the \(kNN\) classifier.
+\end{enumerate}
+
+\begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
+
+Dataset for Block 1:
+\url{http://isgwww.cs.uni-magdeburg.de/cv/lehre/VisAnalytics/material/exercise/datasets/spam.csv}\\
+(adaptiert von
+\url{http://www.dt.fee.unicamp.br/~tiago/smsspamcollection/})
+
+Dataset for Block 2:
+\url{http://isgwww.cs.uni-magdeburg.de/cv/lehre/VisAnalytics/material/exercise/datasets/UNVotes.rds}\\
+(adapted by
+\url{https://dataverse.harvard.edu/dataset.xhtml?persistentId=hdl:1902.1/12379})\\
+- Data Dictionary / Codebook:
+\url{http://isgwww.cs.uni-magdeburg.de/cv/lehre/VisAnalytics/material/exercise/datasets/UNVotes_Codebook.pdf}
+
+\(^1\) \url{https://en.wikipedia.org/wiki/Document-term_matrix}\\
+\(^2\) \url{https://de.wikipedia.org/wiki/Tokenisierung},
+\url{http://tidytextmining.com/tidytext.html}
+
+
+\end{document}

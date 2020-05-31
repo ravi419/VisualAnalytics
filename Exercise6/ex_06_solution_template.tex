@@ -1,0 +1,236 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[11pt,]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdftitle={Excersice Sheet 6},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{#1}}
+\newcommand{\AttributeTok}[1]{#1}
+\newcommand{\BaseNTok}[1]{#1}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.00,0.50,0.50}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{#1}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{#1}}
+\newcommand{\ConstantTok}[1]{#1}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.00,1.00}{#1}}
+\newcommand{\DataTypeTok}[1]{#1}
+\newcommand{\DecValTok}[1]{#1}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{#1}
+\newcommand{\FunctionTok}[1]{#1}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.00,1.00}{#1}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{#1}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{1.00,0.25,0.00}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{1.00,0.25,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.50,0.50}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.00,0.50,0.50}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.00,0.50,0.50}{#1}}
+\newcommand{\VariableTok}[1]{#1}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.00,0.50,0.50}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.00,0.50,0.00}{\textbf{#1}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\usepackage[german]{babel}
+
+\title{Excersice Sheet 6}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+\emph{What factors explain excessive alcohol consumption among
+students?} The record for the task sheet comes from a survey of students
+who attended mathematics and Portuguese courses and contains many
+interesting details about their sociodemographics, life circumstances
+and learning success.\\
+The ordinal scaled variables \texttt{Dalc} and \texttt{Walc} give
+information about the alcohol consumption of the students on weekdays
+and weekends. Create a binary target variable \texttt{alc\_prob} as
+follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(stringr)}
+\KeywordTok{library}\NormalTok{(readr)}
+\KeywordTok{library}\NormalTok{(dplyr)}
+\CommentTok{# (Adapt Path)}
+\NormalTok{ StudentDF <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\KeywordTok{str_c}\NormalTok{(}\KeywordTok{dirname}\NormalTok{(}\KeywordTok{getwd}\NormalTok{()), }\StringTok{"/Exercise6/student_alc.csv"}\NormalTok{))}
+ 
+\NormalTok{ gain.function <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(GiniTar,s_var)\{}
+\NormalTok{  g =}\StringTok{ }\NormalTok{GiniTar }\OperatorTok{-}\StringTok{ }\NormalTok{s_var}
+  \KeywordTok{return}\NormalTok{(g)}
+\NormalTok{\}}
+\NormalTok{ Ginni.function <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(DF)\{}
+\NormalTok{  p <<-}\StringTok{ }\NormalTok{(}\KeywordTok{apply}\NormalTok{(DF, }\DecValTok{2}\NormalTok{, }\ControlFlowTok{function}\NormalTok{(i) i}\OperatorTok{/}\KeywordTok{sum}\NormalTok{(i)))}
+\NormalTok{  Gin <-}\StringTok{ }\DecValTok{1}\OperatorTok{-}\StringTok{ }\NormalTok{(}\KeywordTok{sum}\NormalTok{(p}\OperatorTok{*}\NormalTok{p))}
+
+  \KeywordTok{return}\NormalTok{(Gin)}
+\NormalTok{\}}
+\NormalTok{main.function<-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(df)\{}
+\NormalTok{  StudentDF <<-}\StringTok{ }\NormalTok{df }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{alc_prob =} \KeywordTok{ifelse}\NormalTok{(Dalc }\OperatorTok{+}\StringTok{ }\NormalTok{Walc }\OperatorTok{>=}\StringTok{ }\DecValTok{6}\NormalTok{, }\StringTok{"alc_p"}\NormalTok{ , }\StringTok{"no_alc_p"}\NormalTok{ ))}
+  \KeywordTok{colnames}\NormalTok{(StudentDF)[}\KeywordTok{ncol}\NormalTok{(StudentDF)] <-}\StringTok{ "TargVar"}
+\NormalTok{  TargetList <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{table}\NormalTok{(StudentDF}\OperatorTok{$}\NormalTok{TargVar))}
+\NormalTok{  TargetList <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(TargetList[,}\OperatorTok{-}\DecValTok{1}\NormalTok{], }\DataTypeTok{row.names =}\NormalTok{ TargetList[,}\DecValTok{1}\NormalTok{])}
+\NormalTok{  GiniTar <-}\StringTok{ }\KeywordTok{Ginni.function}\NormalTok{(TargetList)}
+\NormalTok{  Student_alc_prob =}\StringTok{ }\KeywordTok{subset}\NormalTok{(StudentDF, }\DataTypeTok{select=} \OperatorTok{-}\KeywordTok{c}\NormalTok{(TargVar))}
+\NormalTok{  GiniGainList =}\StringTok{ }\KeywordTok{list}\NormalTok{()}
+\NormalTok{  gini_var <-}\StringTok{ }\DecValTok{0}
+  \ControlFlowTok{for}\NormalTok{ (Var }\ControlFlowTok{in}\NormalTok{ (}\KeywordTok{names}\NormalTok{(Student_alc_prob))) \{}
+\NormalTok{    var_df <-}\KeywordTok{count}\NormalTok{(StudentDF,StudentDF[[Var]],StudentDF}\OperatorTok{$}\NormalTok{TargVar)}
+    \ControlFlowTok{for}\NormalTok{ (var_val }\ControlFlowTok{in} \KeywordTok{unique}\NormalTok{(var_df[[}\DecValTok{1}\NormalTok{]])) \{}
+\NormalTok{      temp_df <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(var_df,var_df[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{==}\NormalTok{var_val)}
+\NormalTok{      a<-}\StringTok{ }\KeywordTok{dim}\NormalTok{(StudentDF)}
+\NormalTok{      Probablity <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(temp_df}\OperatorTok{$}\NormalTok{n)}\OperatorTok{/}\NormalTok{a[}\DecValTok{1}\NormalTok{]}
+\NormalTok{      filtered_df =}\StringTok{ }\KeywordTok{subset}\NormalTok{(temp_df, }\DataTypeTok{select=} \OperatorTok{-}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{2}\NormalTok{))}
+\NormalTok{      gini_val <-}\StringTok{ }\KeywordTok{Ginni.function}\NormalTok{(filtered_df)}\OperatorTok{*}\NormalTok{Probablity}
+\NormalTok{      gini_var <-}\StringTok{ }\NormalTok{gini_var}\OperatorTok{+}\StringTok{ }\NormalTok{gini_val}
+\NormalTok{    \}}
+\NormalTok{    gini_gain <-}\StringTok{ }\KeywordTok{gain.function}\NormalTok{(GiniTar,gini_var)}
+\NormalTok{    GiniGainList[[Var]] <-}\StringTok{ }\NormalTok{gini_gain}
+\NormalTok{    gini_var <-}\StringTok{ }\DecValTok{0}
+\NormalTok{    gini_val<-}\StringTok{ }\DecValTok{0}
+\NormalTok{    gini_gain<-}\DecValTok{0}
+    
+\NormalTok{  \}}
+  
+\NormalTok{  TotalGinni<-}\StringTok{ }\KeywordTok{do.call}\NormalTok{(rbind, GiniGainList)}
+\NormalTok{\}}
+
+\KeywordTok{main.function}\NormalTok{(StudentDF)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Calculate the Gini index for the target variable \texttt{alc\_prob}
+  and the \emph{Gini index} for each variable with respect to
+  \texttt{alc\_prob}. Determine the 5 variables with the highest
+  \emph{Gini Gain}.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Solution for Task 1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  Learn 2 different decision trees with \texttt{alc\_prob} as target
+  variable. For the first tree, nodes should be further partitioned
+  until the class distribution of all resulting leaf nodes is pure. For
+  the second tree, nodes with a cardinality of less than 20 instances
+  should not be further partitioned. Determine the quality of the trees
+  by calculating sensitivity (\emph{True Positive Rate}) and specificity
+  (\emph{True Negative Rate}) for a 70\%:30\% split in training and test
+  sets. Display the decision trees graphically and discuss the
+  differences in quality measures
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Solution for Task 2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  Use \texttt{randomForest::randomForest()} to create a random forest
+  with 200 trees. As candidates for a split within a tree a random
+  sample of 5 variables should be drawn. Calculate Accuracy, Sensitivity
+  and Specificity for the Out-of-the-Bag instances and show the most
+  important variables (\texttt{?importance}).
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Solution for Task 3}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+Dataset:
+\url{http://isgwww.cs.uni-magdeburg.de/cv/lehre/VisAnalytics/material/exercise/datasets/student_alc.csv}\\
+(Source: \url{https://www.kaggle.com/uciml/student-alcohol-consumption})
+
+\end{document}

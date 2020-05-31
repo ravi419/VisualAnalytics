@@ -1,0 +1,116 @@
+---
+title: "Exercise Sheet 5"
+fontsize: 11pt
+header-includes: \usepackage[german]{babel}
+output:
+  html_document: default
+  pdf_document: null
+highlight: tango
+fig_caption: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, # -> Sollen Code Chunks im gerenderten Dokument angezeigt werden?
+                      eval = TRUE, # -> Sollen R Code Chunks ausgeführt werden?
+                      warning = FALSE, # -> Warnungen sollten nur am Ende zum Rendern auf FALSE gesetzt werden
+                      message = FALSE) # -> Hinweise sollten nur am Ende zum Rendern auf FALSE gesetzt werden
+```
+
+1. Use DBSCAN to find clusters from nearby large cities around the world (metropolitan areas). A city with at least 50,000 inhabitants is considered large. The $\epsilon$-neighborhood of a city contains all adjacent cities with a Euclidean distance of 0.15 or less in latitude and longitude. A city is considered a core object of a conurbation if at least 8 cities are located in its $\epsilon$-neighborhood. For clustering, use the `maps::world.cities`dataset. Answer the following questions: 
+    a) How many clusters, core objects, border objects and noise objects are found by DBSCAN?
+    b) How many cities does the largest cluster contain and in which country are the cities of the largest cluster located?
+    c) Which three countries have the most cities in clusters?
+    d) Are the Indian cities  `Rajendranagar` und `Rajpur` (directly) density-reachable or density-connected?
+    e) Are `Essen` und `Castrop-Rauxel` (directly) density-reachable or density-connected?
+    f) Which cities are density-reachable from Bochum, but not directly density-reachable?
+
+```{r}
+# Solution for task 1...
+library(maps)
+library(fpc)
+library(factoextra)
+library(dplyr)
+library(plyr)
+library(dbscan)
+
+DF = maps::world.cities
+
+DF2= DF[which(DF[,3]>50000),]
+
+DF2Subset <- DF2[, 4:5]
+DB <- fpc::dbscan(DF2Subset, eps = 0.15, MinPts = 8)
+
+DB
+
+plot(DB, DF2Subset, main = "DBSCAN", frame = FALSE)
+
+DF3 <- cbind(DF2,DB$cluster)
+
+colnames(DF3)[colnames(DF3) == "DB$cluster"] <- "clusters"
+
+  DF4 <- DF3[DF3$clusters!=0 , ]
+
+DF5 <- ddply(DF4, .(clusters), transform, num.clusters= length(unique(name)))
+
+DF5
+
+
+
+```
+
+
+
+
+2. Given again be the dataset from task 2 of task sheet 3. This time use DBSCAN with $minPts=6$ for clustering. First determine a _suitable_ value for $\epsilon$. Display the clustering in a scatter plot. Highlight cluster assignments and noise points in color. Compare and discuss the clustering of DBSCAN with the clustering of $k$-Means. 
+
+```{r}
+# Solution for task 2...
+DfStud <- read.csv(file = "/home/ravi/VersionControl/Git/VisualAnalytics/Exercise5/clustering-student-mat.csv")
+
+dbscan::kNNdistplot(DfStud, k =  6)
+abline(h = 5, lty = 2)
+
+DB <- fpc::dbscan(DfStud, eps = 5, MinPts = 6)
+
+
+fviz_cluster(DB, DfStud, geom = "point")
+
+
+k4 <- kmeans(DfStud, centers = 4, nstart = 25)
+plot(DfStud,col=k4$cluster)
+
+
+```
+
+3. Given again, be the dataset from task 2 of task sheet 3. Use OPTICS to create a density reachability diagram for $minPts=6$. Extract a clustering for each $\textit{reachability-dist}=\{1,1.5,\ldots,5\}$ and display the result in a scatter plot, respectively. Highlight cluster assignments and noise points in color. Evaluate the change of the clustering result with increasing threshold for $\textit{reachability-dist}$ regarding the number of clusters as well as the number of core, border, and noise points. 
+
+```{r}
+# Solution for task 3...
+
+stud_optics <- optics(DfStud,  minPts = 6)
+
+
+for (i in seq(1,5,0.5)) {
+  
+  DB_clus = extractDBSCAN(stud_optics,eps_cl = i)
+  
+  plot(DB_clus)
+  hullplot(DfStud,DB_clus)
+  
+  print(DB_clus)
+  
+  
+}
+
+```
+
+4. Using the example of the silhouette coefficient, discuss the strengths and weaknesses of internal quality measures. Why are they only conditionally suitable for the comparison between clusterings of different algorithms (e.g. $K$-Means and DBSCAN)? In which cases should they still be used?
+
+```{r}
+# Solution for task 4...
+```
+
+------
+
+Dataset for task 2 and 3:  
+http://isgwww.cs.uni-magdeburg.de/cv/lehre/VisAnalytics/material/exercise/datasets/clustering-student-mat.csv

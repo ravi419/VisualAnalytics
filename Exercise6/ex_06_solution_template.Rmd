@@ -1,0 +1,91 @@
+---
+title: "Excersice Sheet 6"
+fontsize: 11pt
+header-includes: \usepackage[german]{babel}
+output:
+  pdf_document:
+    highlight: haddock
+  html_document: default
+fig_caption: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      eval = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+_What factors explain excessive alcohol consumption among students?_ The record for the task sheet comes from a survey of students who attended mathematics and Portuguese courses and contains many interesting details about their sociodemographics, life circumstances and learning success.  
+The ordinal scaled variables `Dalc` and `Walc` give information about the alcohol consumption of the students on weekdays and weekends. Create a binary target variable `alc_prob` as follows:
+
+```{r, echo=T, eval=T}
+library(stringr)
+library(readr)
+library(dplyr)
+# (Adapt Path)
+ StudentDF <- read_csv(str_c(dirname(getwd()), "/Exercise6/student_alc.csv"))
+ 
+ gain.function <- function(GiniTar,s_var){
+  g = GiniTar - s_var
+  return(g)
+}
+ Ginni.function <- function(DF){
+  p <<- (apply(DF, 2, function(i) i/sum(i)))
+  Gin <- 1- (sum(p*p))
+
+  return(Gin)
+}
+main.function<- function(df){
+  StudentDF <<- df %>% mutate(alc_prob = ifelse(Dalc + Walc >= 6, "alc_p" , "no_alc_p" ))
+  colnames(StudentDF)[ncol(StudentDF)] <- "TargVar"
+  TargetList <- as.data.frame(table(StudentDF$TargVar))
+  TargetList <- data.frame(TargetList[,-1], row.names = TargetList[,1])
+  GiniTar <- Ginni.function(TargetList)
+  Student_alc_prob = subset(StudentDF, select= -c(TargVar))
+  GiniGainList = list()
+  gini_var <- 0
+  for (Var in (names(Student_alc_prob))) {
+    var_df <-count(StudentDF,StudentDF[[Var]],StudentDF$TargVar)
+    for (var_val in unique(var_df[[1]])) {
+      temp_df <- subset(var_df,var_df[[1]]==var_val)
+      a<- dim(StudentDF)
+      Probablity <- sum(temp_df$n)/a[1]
+      filtered_df = subset(temp_df, select= -c(1:2))
+      gini_val <- Ginni.function(filtered_df)*Probablity
+      gini_var <- gini_var+ gini_val
+    }
+    gini_gain <- gain.function(GiniTar,gini_var)
+    GiniGainList[[Var]] <- gini_gain
+    gini_var <- 0
+    gini_val<- 0
+    gini_gain<-0
+    
+  }
+  
+  TotalGinni<- do.call(rbind, GiniGainList)
+}
+
+main.function(StudentDF)
+```
+
+1. Calculate the Gini index for the target variable `alc_prob` and the _Gini index_ for each variable with respect to `alc_prob`. Determine the 5 variables with the highest _Gini Gain_.
+
+```{r}
+# Solution for Task 1
+```
+
+2. Learn 2 different decision trees with `alc_prob` as target variable. For the first tree, nodes should be further partitioned until the class distribution of all resulting leaf nodes is pure. For the second tree, nodes with a cardinality of less than 20 instances should not be further partitioned. Determine the quality of the trees by calculating sensitivity (_True Positive Rate_) and specificity (_True Negative Rate_) for a 70%:30% split in training and test sets. Display the decision trees graphically and discuss the differences in quality measures
+
+```{r}
+# Solution for Task 2
+```
+
+3. Use `randomForest::randomForest()` to create a random forest with 200 trees. As candidates for a split within a tree a random sample of 5 variables should be drawn. Calculate Accuracy, Sensitivity and Specificity for the Out-of-the-Bag instances and show the most important variables (`?importance`).
+
+```{r}
+# Solution for Task 3
+```
+------
+Dataset: http://isgwww.cs.uni-magdeburg.de/cv/lehre/VisAnalytics/material/exercise/datasets/student_alc.csv  
+(Source: https://www.kaggle.com/uciml/student-alcohol-consumption)

@@ -1,0 +1,179 @@
+---
+title: "Exercise Sheet 3"
+fontsize: 11pt
+header-includes: \usepackage[german]{babel}
+output:
+  html_document: default
+  pdf_document:
+    highlight: tango
+fig_caption: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	eval = TRUE,
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+ # -> Hinweise sollten nur am Ende zum Rendern auf FALSE gesetzt werden
+
+library(tidyverse)
+library(stringr)
+library(magrittr) 
+library(dplyr)
+library(ggplot2)
+library(cluster)
+library(factoextra)
+      
+```
+
+1. The following two-dimensional data set is given. Perform a $K$-means Clustering with $K=3$ using the Euclidean distance. Use the first three points as initial centroids. For each algorithm iteration, specify the distances between centroids and all points and calculate the changed centroids after each reassignment of the points. 
+
+<nbsp;>   | p1 | p2 | p3 | p4 | p5 | p6 | p7 | p8| p9 | p10 | p11 | p12
+--------- | -- | -- | -- | -- | -- | -- | -- | -- | -- | -- | --  | -- 
+x         | 2.0| 2.0| 2.0| 2.5| 2.5| 3.0| 4.0| 4.0| 4.5| 4.5| 4.5 | 4.5
+y         | 1.0| 1.5| 2.0| 1.0| 2.0| 4.0| 1.0| 2.5| 1.0| 1.5| 2.5 | 3.0
+
+```{r}
+# dat <- tibble(
+#   x = c(2.0, 2.0, 2.0, 2.5, 2.5, 3.0, 4.0, 4.0, 4.5, 4.5, 4.5 , 4.5),
+#   y = c(1.0, 1.5, 2.0, 1.0, 2.0, 4.0, 1.0, 2.5, 1.0, 1.5, 2.5 , 3.0)
+# )
+
+# Solution of task 1...
+
+x <- c(2.0,2.0,2.0,2.5,2.5,3.0,4.0,4.0,4.5,4.5,4.5,4.5)
+y <- c(1.0,1.5,2.0,1.0,2.0,4.0,1.0,2.5,1.0,1.5,2.5,3.0)
+index <- c("p1","p2","p3","p4","p5","p6","p7","p8","p9","p10","p11","p12")
+
+DF <- data.frame(index, x, y, stringsAsFactors=FALSE)
+PreviousCentroids <- (DF[c(1,2,3),c("index","x","y")])
+
+print(PreviousCentroids)
+
+iter <-1
+repeat{
+  
+  CurrentCentroids <- PreviousCentroids
+  Distance <- apply(CurrentCentroids,1,function(CurrentCentroids)
+    (apply(DF,1,function(DF,CurrentCentroids)
+      dist(rbind(DF,CurrentCentroids)),CurrentCentroids)))
+
+Distance <- data.frame(Distance)
+
+cols <- c("p1","p2","p3")
+colnames(Distance) <- cols
+
+Distance$Clusters <- colnames(Distance)[apply(Distance,1,which.min)]
+Distance$index <-index
+DF2 <- merge(DF, Distance, by="index")
+cat("After iteration ",iter)
+cat(" \n")
+cat("Distance Matrix and Cluster Assignment")
+cat(" \n")
+print(DF2)
+cat(" \n")
+
+DF2 <- DF2 %>%
+  select(index,x, y, p1, p2, p3, Clusters) %>% group_by(Clusters)
+
+PreviousCentroids <-  DF2 %>%  summarise(x = mean(x),
+                                       y = mean(y))
+cat("Changed Centroids")
+print(PreviousCentroids)
+cat(" \n")
+iter <- iter +1
+
+if (all(CurrentCentroids == PreviousCentroids)) {
+  break
+ 
+}
+}
+
+```
+
+2. A school would like to group its pupils according to their performance at two intermediate examinations. It is assumed that there are at least 2 clusters of pupils. Load the file `clustering-student-mat.csv`. The file contains for each of the two exams the number of points scored for a total of 395 students.  
+Perform a $K$-means-Clustering for each $k\in \{2,3,\ldots,8\}$. Display the cluster assignments of the points in a scatter plot. 
+
+```{r}
+# Solution of task 2...
+
+ DF <- read_csv(str_c(dirname(getwd()), "/Exercise3/clustering-student-mat.csv"))
+#DF <- read.csv("clustering-student-mat.csv")
+ggplot(DF, aes(x = Exam1, y = Exam2)) +
+  geom_point()
+iter <- 1
+plotlist = list()
+par(mfrow=c(2,4))
+for(i in 2:8) {
+      K <- kmeans(DF, centers= i , nstart = 25)
+      plot(DF,col=K$cluster,(main= i))
+}
+
+```
+
+3. For the clustering in task 2, use the silhouette coefficient to find the optimal value for the number of clusters $K$. Evaluate the result for the representativeness of the centroids with respect to their cluster.
+
+```{r}
+# Solution of task 3...
+
+silhouette_score <- function(k){
+  km <- kmeans(DF, centers = k, nstart=25)
+  ss <- silhouette(km$cluster, dist(DF))
+  mean(ss[, 3])
+}
+k <- 2:8
+avg_sil <- sapply(k, silhouette_score)
+plot(k, type='b', avg_sil, xlab='Number of clusters', ylab='Average Silhouette Scores', frame=FALSE)
+
+
+fviz_nbclust(DF, kmeans, method='silhouette')
+
+
+
+```
+
+4. The following distance matrix is given. Perform agglomerative hierarchical clustering with  _single_ und _complete_ linkage. Display the result in a dendrogram. The dendrogram should represent the order in which the points are joined.
+
+```{r}
+dm <- tribble(~p1,~p2,~p3,~p4,~p5,
+              0.00, 0.02, 0.90, 0.36, 0.53,
+              0.02, 0.00, 0.65, 0.15, 0.24,
+              0.90, 0.65, 0.00, 0.59, 0.45,
+              0.36, 0.15, 0.59, 0.00, 0.56,
+              0.53, 0.24, 0.45, 0.56, 0.00) %>% as.matrix()
+rownames(dm) <- letters[1:5]
+colnames(dm) <- letters[1:5]
+knitr::kable(dm)
+```
+
+```{r}
+# Solution of task 4...
+dm <- as.dist(dm, diag = TRUE)
+dm
+
+hc <- hclust(dm, method = "complete")
+fviz_dend(hc, k = 4,                 # Cut in four groups
+          cex = 1.5,                 # label size
+          color_labels_by_k = TRUE,  
+          ggtheme = theme_gray(),
+          main = "Complete Linkage Dendrogram"
+)
+
+hc <- hclust(dm, method = "single")
+fviz_dend(hc, k = 4,                 # Cut in four groups
+          cex = 1.5,                 # label size
+          color_labels_by_k = TRUE,  
+          ggtheme = theme_gray(),
+          main = "Single Linkage Dendrogram"
+)
+
+
+
+```
+
+------
+
+Dataset for task 2:  
+http://isgwww.cs.uni-magdeburg.de/cv/lehre/VisAnalytics/material/exercise/datasets/clustering-student-mat.csv
